@@ -1,16 +1,23 @@
-/* eslint-disable no-eval */
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaMoon, FaSun } from "react-icons/fa";
 
 const CalculatorApp = () => {
   const [initialValue, setInitialValue] = useState("");
+  const [result, setResult] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const inputRef = useRef(null);
 
   const handleButtonClick = (e) => {
     setInitialValue(initialValue + e.target.innerHTML);
   };
   const equal = () => {
-    setInitialValue(eval(initialValue));
+    try {
+      const evaluation = eval(initialValue);
+      setResult(evaluation);
+      setInitialValue(initialValue);
+    } catch (error) {
+      setResult("Error");
+    }
   };
   const AC = () => {
     setInitialValue("");
@@ -25,12 +32,24 @@ const CalculatorApp = () => {
     setIsDarkMode(true);
   };
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.scrollLeft = inputRef.current.scrollWidth;
+    }
+  }, [initialValue]);
+
   return (
     <div className={isDarkMode ? "" : "dark-mode"}>
       <h1>Calculator</h1>
       <div className="wrapper">
         <div className="view">
-          <input type="text" placeholder="0" value={initialValue} />
+          <h2>{result}</h2>
+          <input
+            type="text"
+            placeholder="0"
+            value={initialValue}
+            ref={inputRef}
+          />
         </div>
         <div>
           <div className="container">
